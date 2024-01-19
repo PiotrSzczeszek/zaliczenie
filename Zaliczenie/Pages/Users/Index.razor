@@ -1,0 +1,89 @@
+@page "/users"
+@using Zaliczenie.Data
+@using Zaliczenie.Data.DTO
+@using Zaliczenie.Data.Entities
+@using Zaliczenie.Shared.Components
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@using Zaliczenie.Utils
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.JSInterop
+@using Zaliczenie.Data
+@using Zaliczenie.Data.Entities
+@using Zaliczenie.Shared.Components
+@inject IJSRuntime JS
+@inject UserManager<User> UserManager
+
+<h3>Index</h3>
+
+@inject ApplicationDbContext DbContext
+
+<DataTable Data="@Users" Columns="@ColumnsConfig" 
+           ActionTemplate="@ActionButtons()" 
+
+           ></DataTable>
+
+@code {
+    
+    private List<object> Users { get; set; }
+
+    private List<ColumnsConfig> ColumnsConfig = new()
+    {
+        new ColumnsConfig()
+        {
+            DisplayName = "Username",
+            PropertyName = nameof(User.UserName),
+            Width = 600
+        },
+        new ColumnsConfig()
+        {
+            DisplayName = "Company",
+            PropertyName = "CompanyName",
+            Width = 250
+        }
+    };
+
+    private RenderFragment<object> ActionButtons()
+    {
+        var buttonBuilder = new ButtonsGenerator<object>();
+        buttonBuilder.AddButton((x) => DeleteItem(x), this, "btn btn-danger", "Delete");
+
+        return buttonBuilder.Build();
+    }
+
+    private static void EditItem(object item)
+    {
+    // Edit logic here
+    }
+
+    private async Task DeleteItem(object item)
+    {
+        var x = (dynamic)item;
+        var confirmed = await JS.InvokeAsync<bool>("confirm", $"Are you sure you want to delete {x.UserName}?");
+        if (confirmed)
+        {
+            ExecuteDelete(x.Id);
+        }
+    }
+
+    private async Task ExecuteDelete(string id)
+    {
+        var user = await UserManager.FindByIdAsync(id);
+        await UserManager.DeleteAsync(user!);
+        
+        OnInitialized();
+    }
+    
+    protected override void OnInitialized()
+    {
+        Users = DbContext.Users.Select(e => (object)new
+        {
+            e.UserName,
+            e.Company.CompanyName,
+            e.Id
+        }).ToList();
+        
+        base.OnInitialized();
+    }
+
+}

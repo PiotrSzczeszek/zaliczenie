@@ -1,0 +1,22 @@
+@page
+@model Zaliczenie.Areas.Identity.Pages.Account.FillCompanyData
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <section>
+            <form id="account" method="post">
+                <h2>Your company data is not complete, please fill required informations.</h2>
+                <hr />
+                <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+                <div class="form-floating mb-3">
+                    <input asp-for="Input.CompanyName" class="form-control"  aria-required="true" placeholder="company name..." />
+                    <label asp-for="Input.CompanyName" class="form-label">Company name</label>
+                    <span asp-validation-for="Input.CompanyName" class="text-danger"></span>
+                </div>
+                <div class="w-50 mx-auto">
+                    <button id="login-submit" type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
+                </div>
+            </form>
+        </section>
+    </div>
+</div>

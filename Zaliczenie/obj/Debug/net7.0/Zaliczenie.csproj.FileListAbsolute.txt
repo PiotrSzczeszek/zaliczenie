@@ -1,7 +1,6 @@
 /Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/bin/Debug/net7.0/appsettings.Development.json
 /Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/bin/Debug/net7.0/appsettings.json
 /Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/bin/Debug/net7.0/Zaliczenie.staticwebassets.runtime.json
-/Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/bin/Debug/net7.0/app.db
 /Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/bin/Debug/net7.0/Zaliczenie
 /Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/bin/Debug/net7.0/Zaliczenie.deps.json
 /Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/bin/Debug/net7.0/Zaliczenie.runtimeconfig.json
@@ -78,7 +77,6 @@
 /Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/obj/Debug/net7.0/Zaliczenie.pdb
 /Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/obj/Debug/net7.0/Zaliczenie.genruntimeconfig.cache
 /Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/obj/Debug/net7.0/ref/Zaliczenie.dll
-/Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/obj/Debug/net7.0/scopedcss/Shared/MainLayout__Authenticated.razor.rz.scp.css
 /Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/bin/Debug/net7.0/Azure.Core.dll
 /Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/bin/Debug/net7.0/Azure.Identity.dll
 /Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/bin/Debug/net7.0/Microsoft.AspNetCore.Razor.Language.dll
@@ -292,3 +290,4 @@
 /Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/bin/Debug/net7.0/runtimes/win/lib/net6.0/System.Runtime.Caching.dll
 /Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/bin/Debug/net7.0/runtimes/win/lib/net6.0/System.Security.Cryptography.ProtectedData.dll
 /Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/bin/Debug/net7.0/runtimes/win/lib/net6.0/System.Windows.Extensions.dll
+/Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/obj/Debug/net7.0/scopedcss/Shared/NavMenuElements/NavElement.razor.rz.scp.css

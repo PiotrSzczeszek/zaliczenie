@@ -1,0 +1,109 @@
+@using Zaliczenie.Data.DTO
+@using System.Diagnostics
+@typeparam T
+
+@if (Data != null && Columns != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                @foreach (var column in Columns)
+                {
+                    <th style="cursor:pointer; width:@column.CssWidth" @onclick="() => Sort(column.PropertyName)">
+                        @column.DisplayName
+                        @if (currentSortingColumn == column.PropertyName)
+                        {
+                            <span>@(currentSortDirection == SortDirection.Ascending ? "🔼" : "🔽")</span>
+                        }
+                    </th>
+                    
+                }
+                @if (ActionTemplate != null)
+                {
+                    <th>Actions</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in sortedData)
+            {
+                <tr>
+                    @foreach (var column in Columns)
+                    {
+                        <td>@GetPropertyValue(item, column.PropertyName)</td>
+                    }
+                    
+                    @if (ActionTemplate != null)
+                    {
+                        <td>@ActionTemplate(item)</td>
+                    }
+                </tr>
+                
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    [Parameter]
+    public IEnumerable<T> Data { get; set; }
+
+    [Parameter]
+    public List<ColumnsConfig> Columns { get; set; }
+    
+    [Parameter]
+    public RenderFragment<T>? ActionTemplate { get; set; }
+
+
+    private IEnumerable<T>? sortedData;
+    private string? currentSortingColumn;
+    private SortDirection currentSortDirection = SortDirection.None;
+
+    protected override void OnParametersSet()
+    {
+        sortedData = Data;
+    }
+
+    private object GetPropertyValue(object item, string propertyName)
+    {
+        return item.GetType().GetProperty(propertyName)?.GetValue(item, null);
+    }
+
+    private void Sort(string columnName)
+    {
+        if (currentSortingColumn != columnName)
+        {
+            currentSortingColumn = columnName;
+            currentSortDirection = SortDirection.Ascending;
+        }
+        else
+        {
+            currentSortDirection = currentSortDirection switch
+            {
+                SortDirection.Ascending => SortDirection.Descending,
+                SortDirection.Descending => SortDirection.None,
+                SortDirection.None => SortDirection.Ascending,
+                _ => throw new UnreachableException()
+            };
+        }
+
+        if (currentSortDirection == SortDirection.None)
+        {
+            sortedData = Data;
+            currentSortingColumn = null;
+            
+            return;
+        }
+        
+        sortedData = currentSortDirection == SortDirection.Ascending
+            ? Data.OrderBy(x => GetPropertyValue(x, columnName))
+            : Data.OrderByDescending(x => GetPropertyValue(x, columnName));
+    }
+
+    private enum SortDirection
+    {
+        None,
+        Ascending,
+        Descending
+    }
+}

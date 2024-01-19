@@ -2,14 +2,13 @@
 
 <PageTitle>Zaliczenie</PageTitle>
 
-<div class="page">
-    <main>
-        <div class="top-row px-4 auth">
-            <LoginDisplay/>
-            <a href="https://docs.microsoft.com/aspnet/" target="_blank">About</a>
+<div class="container-fluid px-0 mx-0">
+    <main class="d-flex flex-row h-100">
+        <div class="sidebar h-100">
+            <NavMenu/>
         </div>
-
-        <article class="content px-4">
+        
+        <article class="content px-4 h-100">
             @Body
         </article>
     </main>

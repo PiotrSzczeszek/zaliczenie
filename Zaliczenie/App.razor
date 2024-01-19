@@ -1,9 +1,10 @@
 ﻿@using Zaliczenie.Data.Entities
 @using Microsoft.AspNetCore.Identity
+@using System.Diagnostics
 <CascadingAuthenticationState>
     <Router AppAssembly="@typeof(App).Assembly">
         <Found Context="routeData">
-            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout__Authenticated)"/>
+            <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
             <FocusOnNavigate RouteData="@routeData" Selector="h1"/>
         </Found>
         <NotFound>
@@ -15,15 +16,26 @@
     </Router>
 </CascadingAuthenticationState>
 
-@inject SignInManager<User> SignInManager
 
+@inject IHttpContextAccessor Accessor;
+@inject SignInManager<User> SignInManager;
+@inject NavigationManager NavigationManager
 
-
-@{
-     
-    
-    if (SignInManager.IsSignedIn(User))
+@code {
+    protected override async Task OnInitializedAsync()
     {
-        
+
+        if (SignInManager.IsSignedIn(Accessor!.HttpContext!.User))
+        {
+            var user = await SignInManager.UserManager.FindByEmailAsync(Accessor.HttpContext.User.Identity!.Name!);
+            if (user is null)
+            {
+                NavigationManager.NavigateTo("Identity/Account/Login");
+                await base.OnInitializedAsync();
+                return;
+            }
+            if (user.CompanyId is null) NavigationManager.NavigateTo("/Identity/Account/FillCompanyData");
+        }
     }
+
 }

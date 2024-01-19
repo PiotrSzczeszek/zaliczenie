@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Zaliczenie.Data;
 
@@ -10,9 +11,11 @@ using Zaliczenie.Data;
 namespace Zaliczenie.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240119173850_MakeCompanyIdNullable")]
+    partial class MakeCompanyIdNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.15");
@@ -167,7 +170,7 @@ namespace Zaliczenie.Data.Migrations
 
                     b.HasIndex("CreatorId");
 
-                    b.ToTable("Companies", (string)null);
+                    b.ToTable("Companies");
                 });
 
             modelBuilder.Entity("Zaliczenie.Data.Entities.User", b =>
@@ -179,6 +182,7 @@ namespace Zaliczenie.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<int?>("CompanyId")
+                        .IsRequired()
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ConcurrencyStamp")
@@ -305,7 +309,9 @@ namespace Zaliczenie.Data.Migrations
                 {
                     b.HasOne("Zaliczenie.Data.Entities.Company", "Company")
                         .WithMany("Members")
-                        .HasForeignKey("CompanyId");
+                        .HasForeignKey("CompanyId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Company");
                 });

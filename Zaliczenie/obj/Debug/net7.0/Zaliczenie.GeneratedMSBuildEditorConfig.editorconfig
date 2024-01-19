@@ -28,8 +28,20 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSW5kZXgucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 
 
+[/Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/Pages/Users/Index.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvVXNlcnMvSW5kZXgucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/Shared/Components/DataTable.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkL0NvbXBvbmVudHMvRGF0YVRhYmxlLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
 [/Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/Shared/LoginDisplay.razor]
 build_metadata.AdditionalFiles.TargetPath = U2hhcmVkL0xvZ2luRGlzcGxheS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
+[/Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/Shared/NavMenuElements/AdminNavElements.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkL05hdk1lbnVFbGVtZW50cy9BZG1pbk5hdkVsZW1lbnRzLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/_Imports.razor]
@@ -40,13 +52,17 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = U2hhcmVkL01haW5MYXlvdXQucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-n59e3l5rdg
 
-[/Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/Shared/MainLayout__Authenticated.razor]
-build_metadata.AdditionalFiles.TargetPath = U2hhcmVkL01haW5MYXlvdXRfX0F1dGhlbnRpY2F0ZWQucmF6b3I=
-build_metadata.AdditionalFiles.CssScope = b-n80w13rp5j
-
 [/Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/Shared/NavMenu.razor]
 build_metadata.AdditionalFiles.TargetPath = U2hhcmVkL05hdk1lbnUucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-v67y8qbj15
+
+[/Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/Shared/NavMenuElements/NavElement.razor]
+build_metadata.AdditionalFiles.TargetPath = U2hhcmVkL05hdk1lbnVFbGVtZW50cy9OYXZFbGVtZW50LnJhem9y
+build_metadata.AdditionalFiles.CssScope = b-wqhm2j2ktl
+
+[/Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/Areas/Identity/Pages/Account/FillCompanyData.cshtml]
+build_metadata.AdditionalFiles.TargetPath = QXJlYXMvSWRlbnRpdHkvUGFnZXMvQWNjb3VudC9GaWxsQ29tcGFueURhdGEuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
 
 [/Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/Areas/Identity/Pages/Account/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXMvSWRlbnRpdHkvUGFnZXMvQWNjb3VudC9Mb2dpbi5jc2h0bWw=
@@ -58,10 +74,6 @@ build_metadata.AdditionalFiles.CssScope =
 
 [/Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/Areas/Identity/Pages/Account/Register.cshtml]
 build_metadata.AdditionalFiles.TargetPath = QXJlYXMvSWRlbnRpdHkvUGFnZXMvQWNjb3VudC9SZWdpc3Rlci5jc2h0bWw=
-build_metadata.AdditionalFiles.CssScope = 
-
-[/Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/Areas/Identity/Pages/Account/RegisterConfirmation.cshtml]
-build_metadata.AdditionalFiles.TargetPath = QXJlYXMvSWRlbnRpdHkvUGFnZXMvQWNjb3VudC9SZWdpc3RlckNvbmZpcm1hdGlvbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
 [/Users/piotrszczeszek/studia/Zaliczenie/Zaliczenie/Areas/Identity/Pages/Account/ResendEmailConfirmation.cshtml]

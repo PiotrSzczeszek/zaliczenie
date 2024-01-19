@@ -1,4 +1,5 @@
-﻿<div class="top-row ps-3 navbar navbar-dark">
+﻿@using Zaliczenie.Shared.NavMenuElements
+<div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="">Zaliczenie</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
@@ -8,21 +9,40 @@
 </div>
 
 <div class="@NavMenuCssClass nav-scrollable" @onclick="ToggleNavMenu">
-    <nav class="flex-column">
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
-                <span class="oi oi-home" aria-hidden="true"></span> Home
-            </NavLink>
+    <nav class="d-flex flex-column h-100 justify-content-between">
+        <div>
+            <AdminNavElements></AdminNavElements>
+            <NavElement Href="" Icon="oi oi-home"  Title="Home"></NavElement>
+            <NavElement Href="users" Icon="oi oi-people-outline"  Title="Users"></NavElement>
+            <NavElement Href="counter" Icon="oi oi-plus"  Title="Counter"></NavElement>
+            <NavElement Href="fetchdata" Icon="oi oi-list-rich"  Title="Fetch data"></NavElement>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="counter">
+                    <span class="oi oi-plus" aria-hidden="true"></span> Counter
+                </NavLink>
+            </div>
+            <div class="nav-item px-3">
+                <NavLink class="nav-link" href="fetchdata">
+                    <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
+                </NavLink>
+            </div>
         </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="counter">
-                <span class="oi oi-plus" aria-hidden="true"></span> Counter
-            </NavLink>
-        </div>
-        <div class="nav-item px-3">
-            <NavLink class="nav-link" href="fetchdata">
-                <span class="oi oi-list-rich" aria-hidden="true"></span> Fetch data
-            </NavLink>
+        <div class="p-3 border-top">
+            <AuthorizeView>
+                <Authorized>
+                    
+                    <div class="nav-item">
+                        <NavLink class="nav-link" href="Identity/Account/Manage" Match="NavLinkMatch.All">
+                            <span class="oi oi-person" aria-hidden="true"></span> Manage account
+                        </NavLink>
+                    </div>
+                    <div class="nav-item">
+                        <NavLink class="nav-link" href="Identity/Account/Logout" Match="NavLinkMatch.All">
+                            <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
+                        </NavLink>
+                    </div>
+                </Authorized>
+            </AuthorizeView>
         </div>
     </nav>
 </div>

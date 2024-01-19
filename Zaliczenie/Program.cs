@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Zaliczenie.Areas.Identity;
 using Zaliczenie.Data;
 using Zaliczenie.Data.Entities;
+using Zaliczenie.StartupConfiguration;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,9 +17,14 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = true)
+builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = false)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages().AddRazorPagesOptions(options =>
+{
+    options.Conventions.AuthorizeFolder("/");
+});
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddServerSideBlazor();
 builder.Services
     .AddScoped<AuthenticationStateProvider, RevalidatingIdentityAuthenticationStateProvider<User>>();
@@ -48,5 +54,8 @@ app.UseAuthorization();
 app.MapControllers();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+
+await IdentitySeeder.SeedRoles(app.Services);
+await IdentitySeeder.SeedAdminAccount(app.Services);
 
 app.Run();

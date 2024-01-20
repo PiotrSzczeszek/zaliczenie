@@ -1,7 +1,11 @@
 ﻿@using Zaliczenie.Shared.NavMenuElements
+@using Zaliczenie.Utils
+@using Zaliczenie.Data
+@inject UserService UserService
+@inject ApplicationDbContext Context
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
-        <a class="navbar-brand" href="">Zaliczenie</a>
+        <a class="navbar-brand" href="">@MyCompanyName</a>
         <button title="Navigation menu" class="navbar-toggler" @onclick="ToggleNavMenu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -46,12 +50,25 @@
 
 @code {
     private bool collapseNavMenu = true;
+    private string MyCompanyName = "";
 
     private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
 
     private void ToggleNavMenu()
     {
         collapseNavMenu = !collapseNavMenu;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var currentUser = await UserService.GetCurrentUser();
+        if (currentUser is not null && currentUser.CompanyId is not null)
+        {
+            var company = Context.Companies.First(e => e.CompanyId == currentUser.CompanyId);
+            MyCompanyName = company.CompanyName;
+        }
+        
+        await base.OnInitializedAsync();
     }
 
 }

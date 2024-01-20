@@ -1,4 +1,4 @@
-﻿FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+﻿FROM mcr.microsoft.com/dotnet/sdk:7.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
@@ -8,7 +8,7 @@ WORKDIR /src
 COPY ["Zaliczenie.csproj", "Zaliczenie/"]
 RUN ls -l
 RUN dotnet restore "Zaliczenie/Zaliczenie.csproj"
-COPY . .
+COPY . ./Zaliczenie
 WORKDIR "/src/Zaliczenie"
 RUN dotnet build "Zaliczenie.csproj" -c Release -o /app/build
 

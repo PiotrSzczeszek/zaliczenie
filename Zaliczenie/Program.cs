@@ -62,7 +62,8 @@ app.MapControllers();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
+
 await IdentitySeeder.SeedRoles(app.Services);
 await IdentitySeeder.SeedAdminAccount(app.Services);
-
-app.Run();
+// new WebHostBuilder().Build();
+app.Run("http://localhost:80");

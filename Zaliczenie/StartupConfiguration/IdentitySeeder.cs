@@ -33,6 +33,7 @@ public static class IdentitySeeder
 
         await SeedRole(roleManager, AppRoles.CompanyManager);
         await SeedRole(roleManager, AppRoles.Admin);
+        await SeedRole(roleManager, AppRoles.Accountant);
     }
 
     private static async Task SeedRole(RoleManager<IdentityRole> roleManager, string roleName)

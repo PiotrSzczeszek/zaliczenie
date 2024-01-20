@@ -1,0 +1,22 @@
+@using Zaliczenie.Data.Constants
+<AuthorizeView Roles="@AppRoles.CompanyManager">
+    <Authorized>
+        <NavMenuGroup Title="Users" Icon="oi oi-people">
+            <NavElement Href="users" Icon="oi oi-list" Title="List"></NavElement>
+            <NavElement Href="users/add" Icon="oi oi-plus" Title="Add"></NavElement>
+        </NavMenuGroup>
+        <NavMenuGroup Title="Clients" Icon="oi oi-credit-card">
+            <NavElement Href="clients" Icon="oi oi-list" Title="List"></NavElement>
+            <NavElement Href="clients/add" Icon="oi oi-plus" Title="Add"></NavElement>
+        </NavMenuGroup>
+        <NavMenuGroup Title="Document types" Icon="oi oi-document">
+            <NavElement Href="document-types" Icon="oi oi-list" Title="List"></NavElement>
+            <NavElement Href="document-types/add" Icon="oi oi-plus" Title="Add"></NavElement>
+        </NavMenuGroup>
+    </Authorized>
+</AuthorizeView>
+
+
+@code {
+
+}

@@ -1,0 +1,15 @@
+@using Zaliczenie.Data.Constants
+<AuthorizeView Roles="@AppRoles.Accountant">
+    <Authorized>
+        <NavMenuGroup Title="My clients" Icon="oi oi-credit-card">
+            <NavElement Href="MyClients" Icon="oi oi-list" Title="List"></NavElement>
+            <NavElement Href="MyClients/documents" Icon="oi oi-document" Title="Documents"></NavElement>
+            <NavElement Href="MyClients/documents/add" Icon="oi oi-plus" Title="Document"></NavElement>
+        </NavMenuGroup>
+    </Authorized>
+</AuthorizeView>
+
+
+@code {
+
+}

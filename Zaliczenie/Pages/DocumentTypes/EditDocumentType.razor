@@ -1,0 +1,73 @@
+@page "/document-types/edit/{id}"
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Forms
+@using Zaliczenie.Data
+@using Zaliczenie.Data.Entities
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using System.ComponentModel.DataAnnotations
+@using Microsoft.EntityFrameworkCore
+@using Zaliczenie.Data.Constants
+@using Zaliczenie.Utils
+@inject ApplicationDbContext Context
+@inject NavigationManager NavigationManager
+@inject UserService UserService
+@attribute [Authorize(Roles = AppRoles.CompanyManager)]
+
+<div class="row w-75 mx-auto">
+    <div class="col-md-12">
+        <section>
+            <EditForm Model="@Input" OnValidSubmit="@HandleValidSubmit">
+                <DataAnnotationsValidator/>
+                <ValidationSummary/>
+
+                <h2>Edit Document Type</h2>
+                <hr/>
+
+                <div class="form-floating mb-3">
+                    <InputText id="name" @bind-Value="Input.Name" class="form-control" placeholder="Document Type Name..."/>
+                    <label for="name">Document Type Name</label>
+                </div>
+                
+                <div class="w-50 mx-auto">
+                    <button type="submit" class="w-100 btn btn-lg btn-primary">Add Document Type</button>
+                </div>
+            </EditForm>
+        </section>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+    public InputModel Input { get; set; } = new InputModel();
+
+    
+    public class InputModel
+    {
+        [Required]
+        public string Name { get; set; }
+    }
+
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var userId = NavigationManager.Uri.Split('/').Last(); // Extract the last segment of the URL
+        var updatedDocumentType = await Context.ClientDocumentTypes.FirstAsync(e => e.Id == id);
+
+        Input.Name = updatedDocumentType.Name;
+    }
+
+    
+    
+    private async Task HandleValidSubmit()
+    {
+        var x = await UserService.GetCurrentUserCompany();
+        
+        var updatedDocumentType = await Context.ClientDocumentTypes.FirstAsync(e => e.Id == id);
+        updatedDocumentType.Name = Input.Name;
+        updatedDocumentType.CompanyId = x!.Value;
+        await Context.SaveChangesAsync();
+        
+        NavigationManager.NavigateTo("/document-types");
+    }
+}

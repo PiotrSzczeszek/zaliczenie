@@ -1,0 +1,83 @@
+@page "/document-types"
+@using Zaliczenie.Data
+@using Zaliczenie.Data.DTO
+@using Zaliczenie.Data.Entities
+@using Zaliczenie.Shared.Components
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@using Zaliczenie.Utils
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.JSInterop
+@using Zaliczenie.Data
+@using Zaliczenie.Data.Constants
+@using Zaliczenie.Data.Entities
+@using Zaliczenie.Shared.Components
+@attribute [Authorize(Roles = AppRoles.CompanyManager)]
+@inject IJSRuntime JS
+@inject UserManager<User> UserManager
+@inject NavigationManager NavigationManager
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ApplicationDbContext DbContext
+@inject UserService UserService
+
+<DataTable Data="@DocumentTypes" Columns="@ColumnsConfig"
+           ActionTemplate="@ActionButtons()">
+</DataTable>
+
+@code {
+
+    private List<ClientDocumentTypes> DocumentTypes { get; set; }
+
+    private List<ColumnsConfig> ColumnsConfig = new()
+    {
+        new ColumnsConfig()
+        {
+            DisplayName = "Name",
+            PropertyName = nameof(ClientDocumentTypes.Name),
+            Width = 600
+        }
+    };
+
+    private RenderFragment<ClientDocumentTypes> ActionButtons()
+    {
+        var buttonBuilder = new ButtonsGenerator<ClientDocumentTypes>();
+        buttonBuilder
+            .AddButton((x) => EditItem(x), this, "btn btn-warning", "oi oi-pencil")
+            .AddButton((x) => DeleteItem(x), this, "btn btn-danger", "oi oi-trash");
+
+        return buttonBuilder.Build();
+    }
+
+    private void EditItem(ClientDocumentTypes item)
+    {
+        NavigationManager.NavigateTo("/document-types/edit/" + item.Id);
+    }
+
+    private async Task DeleteItem(ClientDocumentTypes item)
+    {
+        var confirmed = await JS.InvokeAsync<bool>("confirm", $"Are you sure you want to delete {item.Name}?");
+        if (confirmed)
+        {
+            await ExecuteDelete(item);
+            await OnInitializedAsync();
+        }
+    }
+
+    private async Task ExecuteDelete(ClientDocumentTypes item)
+    {
+        var element = await DbContext.ClientDocumentTypes.FirstAsync(e => e.Id == item.Id);
+        DbContext.Remove(element);
+        await DbContext.SaveChangesAsync();
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var currentUser = await UserService.GetCurrentUser();
+        DocumentTypes = DbContext.ClientDocumentTypes.Where(e => e.CompanyId == currentUser.CompanyId!.Value).ToList();
+
+        base.OnInitialized();
+    }
+
+}

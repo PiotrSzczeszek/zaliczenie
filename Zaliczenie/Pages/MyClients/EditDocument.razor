@@ -1,0 +1,117 @@
+@page "/MyClients/documents/edit/{id}"
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Forms
+@using Zaliczenie.Data
+@using Zaliczenie.Data.Entities
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using Zaliczenie.Data.Constants
+@using Zaliczenie.Utils
+@using System.ComponentModel.DataAnnotations
+@using Humanizer
+@using Microsoft.EntityFrameworkCore
+@inject ApplicationDbContext Context
+@inject UserService UserService
+@inject NavigationManager NavigationManager
+@attribute [Authorize(Roles = AppRoles.Accountant)]
+
+<div class="row w-75 mx-auto">
+    <div class="col-md-12">
+        <section>
+            <EditForm Model="@Input" OnValidSubmit="@HandleValidSubmit">
+                <DataAnnotationsValidator/>
+                <ValidationSummary/>
+
+                <h2>Add Client Document</h2>
+                <hr/>
+
+                <div class="form-floating mb-3">
+                    <InputText id="documentNumber" @bind-Value="Input.DocumentNumber" class="form-control" placeholder="Document Number..."/>
+                    <label for="documentNumber">Document Number</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <InputDate id="addedDate" @bind-Value="Input.AddedDate" class="form-control"/>
+                    <label for="addedDate">Added Date</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <InputSelect @bind-Value="Input.Status" class="form-control">
+                        <option value="@DocumentStatus.New">New</option>
+                        <option value="@DocumentStatus.Processing">Processing</option>
+                        <option value="@DocumentStatus.AdditionalInformationRequired">Need more informations</option>
+                        <option value="@DocumentStatus.Done">Done</option>
+                    </InputSelect>
+                    <label for="status">Document status</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <InputSelect @bind-Value="Input.DocumentTypeId" class="form-control">
+                        @foreach (var docType in DocumentTypeOptions)
+                        {
+                            <option value="@docType.Value">@docType.Text</option>
+                        }
+                    </InputSelect>
+                    <label for="documentTypeId">Document Type</label>
+                </div>
+
+                <div class="w-50 mx-auto">
+                    <button type="submit" class="w-100 btn btn-lg btn-primary">Add Document</button>
+                </div>
+            </EditForm>
+        </section>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public int id { get; set; }
+    public InputModel Input { get; set; } = new InputModel();
+
+    public List<SelectListItem> DocumentTypeOptions { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var editedData = await Context.ClientDocuments.FirstAsync(e => e.Id == id);
+
+        Input.Status = editedData.Status;
+        Input.AddedDate = editedData.AddedDate;
+        Input.DocumentNumber = editedData.DocumentNumber;
+        Input.DocumentTypeId = editedData.DocumentTypeId;
+
+        DocumentTypeOptions = Context.ClientDocumentTypes
+            .Select(dt => new SelectListItem(dt.Name, dt.Id.ToString()))
+            .ToList();
+    }
+
+    public class InputModel
+    {
+        [Required]
+        public string DocumentNumber { get; set; }
+
+        [Required]
+        public string AddedByUserId { get; set; }
+
+        [Required]
+        public DateTime AddedDate { get; set; } = DateTime.Now;
+
+        [Required]
+        public DocumentStatus Status { get; set; } = DocumentStatus.New;
+
+        [Required]
+        public int DocumentTypeId { get; set; }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        var editedData = await Context.ClientDocuments.FirstAsync(e => e.Id == id);
+
+        editedData.DocumentNumber = Input.DocumentNumber;
+        editedData.Status = Input.Status;
+        editedData.DocumentTypeId = Input.DocumentTypeId;
+        editedData.LastUpdated = DateTime.Now;
+
+        await Context.SaveChangesAsync();
+
+        NavigationManager.NavigateTo("/MyClients/documents");
+    }
+}

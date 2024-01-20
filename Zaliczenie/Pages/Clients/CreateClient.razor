@@ -1,0 +1,97 @@
+@page "/clients/add"
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Forms
+@using Zaliczenie.Data
+@using Zaliczenie.Data.Entities
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using System.ComponentModel.DataAnnotations
+@using Zaliczenie.Data.Constants
+@using Zaliczenie.Utils
+@inject ApplicationDbContext Context
+@inject NavigationManager NavigationManager
+@inject UserService UserService
+@attribute [Authorize(Roles = AppRoles.CompanyManager)]
+
+<div class="row w-75 mx-auto">
+    <div class="col-md-12">
+        <section>
+            <EditForm Model="@Input" OnValidSubmit="@HandleValidSubmit">
+                <DataAnnotationsValidator/>
+                <ValidationSummary/>
+
+                <h2>Create New Client</h2>
+                <hr/>
+
+                <div class="form-floating mb-3">
+                    <InputText id="clientName" @bind-Value="Input.ClientName" class="form-control" placeholder="Client Name..."/>
+                    <label for="clientName">Client Name</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <InputNumber id="dayOfMonthForBilling" @bind-Value="Input.DayOfMonthForBilling" class="form-control" placeholder="Day of Month for Billing..."/>
+                    <label for="dayOfMonthForBilling">Day of Month for Billing</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <InputSelect @bind-Value="Input.AssignedUserId" class="form-control">
+                        <option value="">Select User (Optional)</option>
+
+                        @foreach (var user in UserOptions)
+                        {
+                            <option value="@user.Value">@user.Text</option>
+                        }
+                    </InputSelect>
+                    <label for="assignedUserId">Assigned User</label>
+                </div>
+
+                <div class="w-50 mx-auto">
+                    <button type="submit" class="w-100 btn btn-lg btn-primary">Create Client</button>
+                </div>
+            </EditForm>
+        </section>
+    </div>
+</div>
+
+@code {
+    public InputModel Input { get; set; } = new InputModel();
+
+    public List<SelectListItem> UserOptions { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var currentUserCompany = await UserService.GetCurrentUserCompany();
+
+        UserOptions = Context.Users.Where(e => e.CompanyId == currentUserCompany)
+            .Select(u => new SelectListItem(u.UserName, u.Id))
+            .ToList();
+    }
+
+    public class InputModel
+    {
+        [Required]
+        public string ClientName { get; set; }
+
+        [Required]
+        [Range(1, 31)]
+        public int DayOfMonthForBilling { get; set; }
+
+        public string? AssignedUserId { get; set; }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        var currentUserCompany = await UserService.GetCurrentUserCompany();
+        var client = new Client
+        {
+            ClientName = Input.ClientName,
+            DayOfMonthForBilling = Input.DayOfMonthForBilling,
+            AssignedUserId = Input.AssignedUserId,
+            CompanyId = currentUserCompany!.Value
+        };
+
+        Context.Clients.Add(client);
+        await Context.SaveChangesAsync();
+        NavigationManager.NavigateTo("/clients");
+    }
+
+}

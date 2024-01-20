@@ -24,7 +24,8 @@
 @code {
     protected override async Task OnInitializedAsync()
     {
-
+        if (Accessor?.HttpContext?.User is null) return;
+        
         if (SignInManager.IsSignedIn(Accessor!.HttpContext!.User))
         {
             var user = await SignInManager.UserManager.FindByEmailAsync(Accessor.HttpContext.User.Identity!.Name!);

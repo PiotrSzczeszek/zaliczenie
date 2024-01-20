@@ -2,7 +2,23 @@
 @page "/"
 @using Zaliczenie.Data.Entities
 @using Microsoft.AspNetCore.Identity
+@using Zaliczenie.Utils
+@inject UserService UserService
 
 <PageTitle>Index</PageTitle>
 
-<h1>Hello, world!</h1>
+<h1>Hello, @UserGreeting</h1>
+
+@code {
+
+    private User? User = null;
+    private string UserGreeting => User?.UserName ?? "please log in.";
+    
+    protected override async Task OnInitializedAsync()
+    {
+        User = await UserService.GetCurrentUser();
+        
+        await base.OnInitializedAsync();
+    }
+
+}

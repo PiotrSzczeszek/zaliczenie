@@ -13,7 +13,7 @@
 @inject ApplicationDbContext Context
 @inject NavigationManager NavigationManager
 @inject UserService UserService
-@attribute [Authorize(Roles = AppRoles.CompanyManager)]
+@attribute [Authorize(Roles = $"{AppRoles.CompanyManager}, {AppRoles.Admin}")]
 
 <div class="row w-75 mx-auto">
     <div class="col-md-12">
@@ -59,10 +59,15 @@
                         </Authorized>
                     </AuthorizeView>
                     <div class="col-md-6">
-
                         <div class="form-check mb-3">
                             <InputCheckbox id="isCompanyManager" @bind-Value="Input.IsCompanyManager" class="form-check-input"/>
                             <label for="isCompanyManager" class="form-check-label">Has access to company management</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check mb-3">
+                            <InputCheckbox id="isAccountant" @bind-Value="Input.IsAccountant" class="form-check-input"/>
+                            <label for="isAccountant" class="form-check-label">Is accountant</label>
                         </div>
                     </div>
                 </div>
@@ -86,9 +91,10 @@
 </div>
 
 @code {
+
     [Parameter]
     public string id { get; set; }
-    
+
     private User UpdatedUser { get; set; }
     public InputModel Input { get; set; } = new InputModel();
 
@@ -104,7 +110,8 @@
         Input.Email = UpdatedUser.Email;
         Input.IsAdmin = await UserManager.IsInRoleAsync(UpdatedUser, AppRoles.Admin);
         Input.IsCompanyManager = await UserManager.IsInRoleAsync(UpdatedUser, AppRoles.CompanyManager);
-        
+        Input.IsAccountant = await UserManager.IsInRoleAsync(UpdatedUser, AppRoles.Accountant);
+
         CompanyOptions = Context.Companies
             .Select(e => new SelectListItem(e.CompanyName, e.CompanyId.ToString()))
             .ToList();
@@ -122,6 +129,7 @@
         public bool IsAdmin { get; set; } = false;
 
         public bool IsCompanyManager { get; set; } = false;
+        public bool IsAccountant { get; set; } = false;
     }
 
     private async Task HandleValidSubmit()
@@ -140,14 +148,19 @@
         {
             if (Input.IsAdmin)
                 await UserManager.AddToRoleAsync(UpdatedUser, AppRoles.Admin);
-            else 
+            else
                 await UserManager.RemoveFromRoleAsync(UpdatedUser, AppRoles.Admin);
-                
+
             if (Input.IsCompanyManager)
                 await UserManager.AddToRoleAsync(UpdatedUser, AppRoles.CompanyManager);
             else
                 await UserManager.RemoveFromRoleAsync(UpdatedUser, AppRoles.CompanyManager);
             
+            if (Input.IsAccountant)
+                await UserManager.AddToRoleAsync(UpdatedUser, AppRoles.Accountant);
+            else
+                await UserManager.RemoveFromRoleAsync(UpdatedUser, AppRoles.Accountant);
+
             NavigationManager.NavigateTo("/users");
         }
         else
@@ -155,4 +168,5 @@
             ValidationErrors = result.Errors.Select(e => e.Description).ToList();
         }
     }
+
 }

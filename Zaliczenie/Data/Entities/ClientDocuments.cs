@@ -6,7 +6,7 @@ namespace Zaliczenie.Data.Entities;
 
 public class ClientDocuments
 {
-    public string Id { get; set; }
+    public int Id { get; set; }
     public string DocumentNumber { get; set; }
     public string AddedByUserId { get; set; }
     public virtual Client Client { get; set; }

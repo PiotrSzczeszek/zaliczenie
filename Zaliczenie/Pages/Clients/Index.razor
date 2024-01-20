@@ -1,4 +1,4 @@
-@page "/users"
+@page "/clients"
 @using Zaliczenie.Data
 @using Zaliczenie.Data.DTO
 @using Zaliczenie.Data.Entities
@@ -12,30 +12,36 @@
 @using Zaliczenie.Data.Constants
 @using Zaliczenie.Data.Entities
 @using Zaliczenie.Shared.Components
-@attribute [Authorize(Roles = $"{AppRoles.CompanyManager}, {AppRoles.Admin}")]
+@attribute [Authorize(Roles = AppRoles.CompanyManager)]
 @inject IJSRuntime JS
 @inject UserManager<User> UserManager
 @inject NavigationManager NavigationManager
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ApplicationDbContext DbContext
+@inject UserService UserService
 
-<DataTable Data="@Users" Columns="@ColumnsConfig" 
-           ActionTemplate="@ActionButtons()" 
-
-           ></DataTable>
+<DataTable Data="@Clients" Columns="@ColumnsConfig"
+           ActionTemplate="@ActionButtons()">
+</DataTable>
 
 @code {
-    
-    private List<object> Users { get; set; }
+
+    private List<object> Clients { get; set; }
 
     private List<ColumnsConfig> ColumnsConfig = new()
     {
         new ColumnsConfig()
         {
-            DisplayName = "Username",
-            PropertyName = nameof(User.UserName),
+            DisplayName = "Name",
+            PropertyName = nameof(Client.ClientName),
             Width = 600
+        },
+        new ColumnsConfig()
+        {
+            DisplayName = "Assigned user",
+            PropertyName = "Username",
+            Width = 250
         },
         new ColumnsConfig()
         {
@@ -58,52 +64,56 @@
     private void EditItem(object item)
     {
         var x = (dynamic)item;
-        
-        NavigationManager.NavigateTo("/users/edit/" + x.Id);
+
+        NavigationManager.NavigateTo("/clients/edit/" + x.ClientId);
     }
 
     private async Task DeleteItem(object item)
     {
         var x = (dynamic)item;
-        var confirmed = await JS.InvokeAsync<bool>("confirm", $"Are you sure you want to delete {x.UserName}?");
+        var confirmed = await JS.InvokeAsync<bool>("confirm", $"Are you sure you want to delete {x.ClientName}?");
         if (confirmed)
         {
-            ExecuteDelete(x.Id);
+            ExecuteDelete(x.ClientId);
         }
     }
 
-    private async Task ExecuteDelete(string id)
+    private async Task ExecuteDelete(int id)
     {
-        var user = await UserManager.FindByIdAsync(id);
-        await UserManager.DeleteAsync(user!);
         
+        var client = await DbContext.Clients.FirstAsync(e => e.ClientId == id);
+        DbContext.Remove(client);
+        await DbContext.SaveChangesAsync();
+
         await OnInitializedAsync();
     }
-    
+
     protected override async Task OnInitializedAsync()
     {
-        var usersQuery = DbContext.Users.AsQueryable();
-            
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
+        var clientsQuery = DbContext.Clients.AsQueryable();
 
-        
-        var userRoles = user.FindAll(claim => claim.Type == System.Security.Claims.ClaimTypes.Role)
-            .Select(claim => claim.Value);
+    // var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+    // var user = authState.User;
+    //
+    //
+    // var userRoles = user.FindAll(claim => claim.Type == System.Security.Claims.ClaimTypes.Role)
+    //     .Select(claim => claim.Value);
 
-        if (!userRoles.Contains(AppRoles.Admin))
+        if (!await UserService.DoesUserHaveRole(AppRoles.Admin))
         {
-            var userEntity = await UserManager.GetUserAsync(user);
-            usersQuery = usersQuery.Where(e => e.CompanyId == userEntity.CompanyId);
+            var userCompany = await UserService.GetCurrentUserCompany();
+
+            clientsQuery = clientsQuery.Where(e => e.CompanyId == userCompany);
         }
 
-        Users = usersQuery.Select(e => (object)new
+        Clients = clientsQuery.Select(e => (object)new
         {
-            e.UserName,
             e.Company.CompanyName,
-            e.Id
+            e.ClientName,
+            Username = e.AssignedUser == null ? "" : e.AssignedUser.UserName,
+            e.ClientId
         }).ToList();
-        
+
         base.OnInitialized();
     }
 

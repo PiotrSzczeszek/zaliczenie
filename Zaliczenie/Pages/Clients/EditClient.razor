@@ -1,0 +1,111 @@
+@page "/clients/edit/{id}"
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Forms
+@using Zaliczenie.Data
+@using Zaliczenie.Data.Entities
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using Zaliczenie.Data.Constants
+@using System.ComponentModel.DataAnnotations
+@using Zaliczenie.Utils
+@inject ApplicationDbContext Context
+@inject NavigationManager NavigationManager
+@inject UserService UserService
+@attribute [Authorize(Roles = AppRoles.CompanyManager)]
+
+<div class="row w-75 mx-auto">
+    <div class="col-md-12">
+        <section>
+            <EditForm Model="@Input" OnValidSubmit="@HandleValidSubmit">
+                <DataAnnotationsValidator/>
+                <ValidationSummary/>
+
+                <h2>Update Client</h2>
+                <hr/>
+
+                <div class="form-floating mb-3">
+                    <InputText id="clientName" @bind-Value="Input.ClientName" class="form-control" placeholder="Client Name..."/>
+                    <label for="clientName">Client Name</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <InputNumber id="dayOfMonthForBilling" @bind-Value="Input.DayOfMonthForBilling" class="form-control" placeholder="Day of Month for Billing..."/>
+                    <label for="dayOfMonthForBilling">Day of Month for Billing</label>
+                </div>
+
+                <div class="form-floating mb-3">
+                    <InputSelect @bind-Value="Input.AssignedUserId" class="form-control">
+                        <option value="">Select User (Optional)</option>
+                        @foreach (var user in UserOptions)
+                        {
+                            <option value="@user.Value">@user.Text</option>
+                        }
+                    </InputSelect>
+                    <label for="assignedUserId">Assigned User</label>
+                </div>
+
+                <div class="w-50 mx-auto">
+                    <button type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
+                </div>
+            </EditForm>
+        </section>
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string id { get; set; }
+    
+    private Client UpdatedClient { get; set; }
+    public InputModel Input { get; set; } = new InputModel();
+
+    public List<SelectListItem> UserOptions { get; set; }
+    List<string> ValidationErrors { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        int clientId = int.Parse(id); // Convert the id to integer
+        UpdatedClient = await Context.Clients.FindAsync(clientId);
+
+        if (UpdatedClient != null)
+        {
+            Input.ClientName = UpdatedClient.ClientName;
+            Input.DayOfMonthForBilling = UpdatedClient.DayOfMonthForBilling;
+            Input.AssignedUserId = UpdatedClient.AssignedUserId;
+
+            
+            var currentUserCompany = await UserService.GetCurrentUserCompany();
+            
+            UserOptions = Context.Users
+                .Where(e => e.CompanyId == currentUserCompany!.Value)
+                .Select(u => new SelectListItem(u.UserName, u.Id))
+                .ToList();
+        }
+    }
+
+    public class InputModel
+    {
+        [Required]
+        public string ClientName { get; set; }
+
+        [Required]
+        [Range(1, 31)]
+        public int DayOfMonthForBilling { get; set; }
+
+        public string? AssignedUserId { get; set; }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        var currentUserCompany = await UserService.GetCurrentUserCompany();
+        
+        UpdatedClient.CompanyId = currentUserCompany!.Value;
+        UpdatedClient.ClientName = Input.ClientName;
+        UpdatedClient.DayOfMonthForBilling = Input.DayOfMonthForBilling;
+        UpdatedClient.AssignedUserId = Input.AssignedUserId;
+
+        Context.Clients.Update(UpdatedClient);
+        await Context.SaveChangesAsync();
+
+        NavigationManager.NavigateTo("/clients");
+    }
+}

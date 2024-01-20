@@ -1,0 +1,66 @@
+@page "/document-types/add"
+@using Microsoft.AspNetCore.Components
+@using Microsoft.AspNetCore.Components.Forms
+@using Zaliczenie.Data
+@using Zaliczenie.Data.Entities
+@using Microsoft.AspNetCore.Mvc.Rendering
+@using System.ComponentModel.DataAnnotations
+@using Zaliczenie.Data.Constants
+@using Zaliczenie.Utils
+@inject ApplicationDbContext Context
+@inject NavigationManager NavigationManager
+@inject UserService UserService
+@attribute [Authorize(Roles = AppRoles.CompanyManager)]
+
+<div class="row w-75 mx-auto">
+    <div class="col-md-12">
+        <section>
+            <EditForm Model="@Input" OnValidSubmit="@HandleValidSubmit">
+                <DataAnnotationsValidator/>
+                <ValidationSummary/>
+
+                <h2>Add Document Type</h2>
+                <hr/>
+
+                <div class="form-floating mb-3">
+                    <InputText id="name" @bind-Value="Input.Name" class="form-control" placeholder="Document Type Name..."/>
+                    <label for="name">Document Type Name</label>
+                </div>
+                
+                <div class="w-50 mx-auto">
+                    <button type="submit" class="w-100 btn btn-lg btn-primary">Add Document Type</button>
+                </div>
+            </EditForm>
+        </section>
+    </div>
+</div>
+
+@code {
+    public InputModel Input { get; set; } = new InputModel();
+
+    
+    public class InputModel
+    {
+        [Required]
+        public string Name { get; set; }
+
+        [Required]
+        public int CompanyId { get; set; }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        var x = await UserService.GetCurrentUserCompany();
+        
+        var documentType = new ClientDocumentTypes 
+        {
+            Name = Input.Name,
+            CompanyId = x!.Value
+        };
+
+        Context.ClientDocumentTypes.Add(documentType);
+        await Context.SaveChangesAsync();
+
+        NavigationManager.NavigateTo("/document-types");
+    }
+}

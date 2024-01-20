@@ -13,7 +13,7 @@
 @inject ApplicationDbContext Context
 @inject NavigationManager NavigationManager
 @inject UserService UserService
-@attribute [Authorize(Roles = AppRoles.CompanyManager)]
+@attribute [Authorize(Roles = $"{AppRoles.CompanyManager}, {AppRoles.Admin}")]
 
 <div class="row w-75 mx-auto">
     <div class="col-md-12">
@@ -54,7 +54,7 @@
                     <AuthorizeView Roles="@AppRoles.Admin">
                         <Authorized Context="bbb">
 
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="form-check mb-3">
                                     <InputCheckbox id="isAdmin" @bind-Value="Input.IsAdmin" class="form-check-input"/>
                                     <label for="isAdmin" class="form-check-label">Has admin access</label>
@@ -62,11 +62,17 @@
                             </div>
                         </Authorized>
                     </AuthorizeView>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
 
                         <div class="form-check mb-3">
                             <InputCheckbox id="isCompanyManager" @bind-Value="Input.IsCompanyManager" class="form-check-input"/>
                             <label for="isCompanyManager" class="form-check-label">Has access to company management</label>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-check mb-3">
+                            <InputCheckbox id="isAccountant" @bind-Value="Input.IsAccountant" class="form-check-input"/>
+                            <label for="isAccountant" class="form-check-label">Is accountant</label>
                         </div>
                     </div>
                 </div>
@@ -118,6 +124,7 @@
         public bool IsAdmin { get; set; } = false;
 
         public bool IsCompanyManager { get; set; } = false;
+        public bool IsAccountant { get; set; } = false;
     }
 
     private async Task HandleValidSubmit()
@@ -137,6 +144,8 @@
                 await UserManager.AddToRoleAsync(user, AppRoles.Admin);
             if (Input.IsCompanyManager)
                 await UserManager.AddToRoleAsync(user, AppRoles.CompanyManager);
+            if (Input.IsAccountant)
+                await UserManager.AddToRoleAsync(user, AppRoles.Accountant);
 
             NavigationManager.NavigateTo("/users");
         }

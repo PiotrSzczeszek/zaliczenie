@@ -1,0 +1,78 @@
+@page "/MyClients/documents"
+@using Zaliczenie.Data
+@using Zaliczenie.Data.DTO
+@using Zaliczenie.Data.Entities
+@using Zaliczenie.Shared.Components
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@using Zaliczenie.Utils
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.JSInterop
+@using Zaliczenie.Data
+@using Zaliczenie.Data.Constants
+@using Zaliczenie.Data.Entities
+@using Zaliczenie.Shared.Components
+@attribute [Authorize(Roles = AppRoles.Accountant)]
+@inject IJSRuntime JS
+@inject UserManager<User> UserManager
+@inject NavigationManager NavigationManager
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ApplicationDbContext DbContext
+@inject UserService UserService
+
+<DataTable Data="@ClientDocumentsData" Columns="@ColumnsConfig"
+           ActionTemplate="@ActionButtons()">
+</DataTable>
+
+@code {
+
+    private List<ClientDocuments> ClientDocumentsData { get; set; }
+
+    private List<ColumnsConfig> ColumnsConfig = new()
+    {
+        new ColumnsConfig()
+        {
+            DisplayName = "Name",
+            PropertyName = nameof(ClientDocuments.DocumentNumber),
+            Width = 400
+        },
+        new ColumnsConfig()
+        {
+            DisplayName = "Added date",
+            PropertyName = nameof(ClientDocuments.AddedDate),
+            Width = 400
+        },
+        new ColumnsConfig()
+        {
+            DisplayName = "Status",
+            PropertyName = nameof(ClientDocuments.Status),
+            Width = 350
+        }
+    };
+
+    private RenderFragment<ClientDocuments> ActionButtons()
+    {
+        var buttonBuilder = new ButtonsGenerator<ClientDocuments>();
+        buttonBuilder
+            .AddButton((x) => EditItem(x), this, "btn btn-warning", "oi oi-pencil");
+
+        return buttonBuilder.Build();
+    }
+
+    private void EditItem(ClientDocuments item)
+    {
+        NavigationManager.NavigateTo("/MyClients/documents/edit" + item.Id);
+    }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        var currentUser = await UserService.GetCurrentUser();
+        var myCompanyClients = DbContext.Clients.Where(e => e.AssignedUserId == currentUser!.Id).Select(e => e.ClientId).ToList();
+        ClientDocumentsData = DbContext.ClientDocuments.Where(e => myCompanyClients.Contains(e.ClientId)).ToList();
+
+        base.OnInitialized();
+    }
+
+}

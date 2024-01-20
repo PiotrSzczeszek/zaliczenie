@@ -1,0 +1,107 @@
+@page "/MyClients"
+@using Zaliczenie.Data
+@using Zaliczenie.Data.DTO
+@using Zaliczenie.Data.Entities
+@using Zaliczenie.Shared.Components
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.EntityFrameworkCore
+@using Zaliczenie.Utils
+@using Microsoft.AspNetCore.Identity
+@using Microsoft.JSInterop
+@using Zaliczenie.Data
+@using Zaliczenie.Data.Constants
+@using Zaliczenie.Data.Entities
+@using Zaliczenie.Shared.Components
+@attribute [Authorize(Roles = AppRoles.Accountant)]
+@inject IJSRuntime JS
+@inject UserManager<User> UserManager
+@inject NavigationManager NavigationManager
+
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ApplicationDbContext DbContext
+@inject UserService UserService
+
+<DataTable Data="@Clients" Columns="@ColumnsConfig"
+           ActionTemplate="@ActionButtons()">
+</DataTable>
+
+@code {
+
+    private List<object> Clients { get; set; }
+
+    private List<ColumnsConfig> ColumnsConfig = new()
+    {
+        new ColumnsConfig()
+        {
+            DisplayName = "Name",
+            PropertyName = nameof(Client.ClientName),
+            Width = 600
+        },
+        new ColumnsConfig()
+        {
+            DisplayName = "Company",
+            PropertyName = "CompanyName",
+            Width = 250
+        },
+        new ColumnsConfig()
+        {
+            DisplayName = "Billing month day",
+            PropertyName = nameof(Client.DayOfMonthForBilling),
+            Width = 100
+        },
+        new ColumnsConfig()
+        {
+            DisplayName = "Documents count",
+            PropertyName = "DocumentsCount",
+            Width = 100
+        },
+        new ColumnsConfig()
+        {
+            DisplayName = "Documents done",
+            PropertyName ="DocumentsCountDone",
+            Width = 100
+        },
+        //DocumentsCount
+    };
+
+    private RenderFragment<object> ActionButtons()
+    {
+        var buttonBuilder = new ButtonsGenerator<object>();
+        buttonBuilder
+            .AddButton((x) => ShowDocuments(x), this, "btn btn-warning", "oi oi-document");
+
+        return buttonBuilder.Build();
+    }
+
+    private void ShowDocuments(object item)
+    {
+        var x = (dynamic)item;
+
+        NavigationManager.NavigateTo("/MyClients/documents/" + x.ClientId);
+    }
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+    // var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+    // var user = authState.User;
+    //
+    //
+    // var userRoles = user.FindAll(claim => claim.Type == System.Security.Claims.ClaimTypes.Role)
+    //     .Select(claim => claim.Value);
+        var currentUser = await UserService.GetCurrentUser();
+        Clients = DbContext.Clients.Where(e => e.AssignedUserId == currentUser!.Id).Select(e => (object)new
+        {
+            e.ClientName,
+            e.ClientId,
+            e.DayOfMonthForBilling,
+            DocumentsCount = e.Documents.Count,
+            DocumentsCountDone = e.Documents.Count(e => e.Status == DocumentStatus.Done)
+        }).ToList();
+
+        base.OnInitialized();
+    }
+
+}

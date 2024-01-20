@@ -27,7 +27,7 @@
                     <InputText id="name" @bind-Value="Input.Name" class="form-control" placeholder="Document Type Name..."/>
                     <label for="name">Document Type Name</label>
                 </div>
-                
+
                 <div class="w-50 mx-auto">
                     <button type="submit" class="w-100 btn btn-lg btn-primary">Add Document Type</button>
                 </div>
@@ -37,37 +37,39 @@
 </div>
 
 @code {
+
     [Parameter]
-    public int id { get; set; }
+    public string id { get; set; }
+
     public InputModel Input { get; set; } = new InputModel();
 
-    
+
     public class InputModel
     {
         [Required]
         public string Name { get; set; }
     }
 
-    
+
     protected override async Task OnInitializedAsync()
     {
         var userId = NavigationManager.Uri.Split('/').Last(); // Extract the last segment of the URL
-        var updatedDocumentType = await Context.ClientDocumentTypes.FirstAsync(e => e.Id == id);
+        var updatedDocumentType = await Context.ClientDocumentTypes.FirstAsync(e => e.Id == int.Parse(id));
 
         Input.Name = updatedDocumentType.Name;
     }
 
-    
-    
+
     private async Task HandleValidSubmit()
     {
         var x = await UserService.GetCurrentUserCompany();
-        
-        var updatedDocumentType = await Context.ClientDocumentTypes.FirstAsync(e => e.Id == id);
+
+        var updatedDocumentType = await Context.ClientDocumentTypes.FirstAsync(e => e.Id == int.Parse(id));
         updatedDocumentType.Name = Input.Name;
         updatedDocumentType.CompanyId = x!.Value;
         await Context.SaveChangesAsync();
-        
+
         NavigationManager.NavigateTo("/document-types");
     }
+
 }

@@ -65,5 +65,4 @@ app.MapFallbackToPage("/_Host");
 
 await IdentitySeeder.SeedRoles(app.Services);
 await IdentitySeeder.SeedAdminAccount(app.Services);
-// new WebHostBuilder().Build();
-app.Run("http://localhost:80");
+app.Run("http://+:80");

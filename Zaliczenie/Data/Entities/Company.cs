@@ -25,10 +25,12 @@ public class CompanyConfiguration : IEntityTypeConfiguration<Company>
         builder.HasOne(e => e.Creator)
             .WithMany()
             .HasForeignKey(e => e.CreatorId)
-            .HasPrincipalKey(e => e.Id);
+            .HasPrincipalKey(e => e.Id)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasMany(e => e.Members)
             .WithOne(e => e.Company)
-            .HasForeignKey(e => e.CompanyId);
+            .HasForeignKey(e => e.CompanyId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

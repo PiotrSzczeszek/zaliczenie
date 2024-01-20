@@ -7,6 +7,8 @@
 @using Zaliczenie.Data.Constants
 @using Zaliczenie.Utils
 @using System.ComponentModel.DataAnnotations
+@using Humanizer
+@using Microsoft.EntityFrameworkCore
 @inject ApplicationDbContext Context
 @inject UserService UserService
 @inject NavigationManager NavigationManager
@@ -51,6 +53,17 @@
                     </InputSelect>
                     <label for="documentTypeId">Document Type</label>
                 </div>
+                
+                
+                <div class="form-floating mb-3">
+                    <InputSelect @bind-Value="Input.ClientId" class="form-control">
+                        @foreach (var client in ClientOptions)
+                        {
+                            <option value="@client.Value">@client.Text</option>
+                        }
+                    </InputSelect>
+                    <label for="clientId">Client</label>
+                </div>
 
                 <div class="w-50 mx-auto">
                     <button type="submit" class="w-100 btn btn-lg btn-primary">Add Document</button>
@@ -64,6 +77,7 @@
     public InputModel Input { get; set; } = new InputModel();
 
     public List<SelectListItem> DocumentTypeOptions { get; set; }
+    public List<SelectListItem> ClientOptions { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
@@ -73,7 +87,13 @@
         Input.Status = DocumentStatus.New;
 
         DocumentTypeOptions = Context.ClientDocumentTypes
+            .AsNoTracking()
             .Select(dt => new SelectListItem(dt.Name, dt.Id.ToString()))
+            .ToList();
+        ClientOptions = Context.Clients
+            .AsNoTracking()
+            .Where(e => e.AssignedUserId == currentUser!.Id)
+            .Select(e => new SelectListItem(e.ClientName, e.ClientId.ToString()))
             .ToList();
     }
 
@@ -93,21 +113,30 @@
 
         [Required]
         public int DocumentTypeId { get; set; }
+        
+        [Required]
+        public int ClientId { get; set; }
     }
 
     private async Task HandleValidSubmit()
     {
+        var clientExists = Context.Clients.Any(c => c.ClientId == Input.ClientId);
+        var userExists = Context.Users.Any(u => u.Id == Input.AddedByUserId);
+        var documentTypeExists = Context.ClientDocumentTypes.Any(dt => dt.Id == Input.DocumentTypeId);
+
+        
         var clientDocument = new ClientDocuments()
         {
             DocumentNumber = Input.DocumentNumber,
             AddedByUserId = Input.AddedByUserId,
             AddedDate = Input.AddedDate,
             Status = Input.Status,
-            DocumentTypeId = Input.DocumentTypeId
+            DocumentTypeId = Input.DocumentTypeId,
+            ClientId = Input.ClientId
         };
 
-        Context.ClientDocuments.Add(clientDocument);
-        await Context.SaveChangesAsync();
+        Context.Add(clientDocument);
+        Context.SaveChanges();
 
         NavigationManager.NavigateTo("/MyClients/documents");
     }

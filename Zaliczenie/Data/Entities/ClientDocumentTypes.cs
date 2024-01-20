@@ -19,6 +19,7 @@ public class ClientDocumentTypesConfiguration : IEntityTypeConfiguration<ClientD
 
         builder.HasOne(e => e.Company)
             .WithMany()
-            .HasForeignKey(e => e.CompanyId);
+            .HasForeignKey(e => e.CompanyId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

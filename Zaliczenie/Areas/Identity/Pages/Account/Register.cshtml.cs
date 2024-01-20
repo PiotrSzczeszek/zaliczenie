@@ -146,6 +146,7 @@ namespace Zaliczenie.Areas.Identity.Pages.Account
                     }
                     await _signInManager.SignInAsync(user, isPersistent: false);
                     await _userManager.AddToRoleAsync(user, AppRoles.CompanyManager);
+                    await _signInManager.RefreshSignInAsync(user);
 
                     if (user.CompanyId is null)
                     {

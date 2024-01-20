@@ -41,14 +41,18 @@ public class ClientDocumnetsConfiguration : IEntityTypeConfiguration<ClientDocum
         builder.HasOne(e => e.AddedBy)
             .WithMany()
             .HasForeignKey(e => e.AddedByUserId)
-            .IsRequired();
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.Property(e => e.LastUpdated)
             .ValueGeneratedOnUpdate();
 
+        builder.HasOne(e => e.DocumentTypeEntity)
+            .WithMany()
+            .HasForeignKey(e => e.DocumentTypeId);
+
         builder.HasOne(e => e.Client)
             .WithMany(e => e.Documents)
             .HasForeignKey(e => e.ClientId)
-            .IsRequired();
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

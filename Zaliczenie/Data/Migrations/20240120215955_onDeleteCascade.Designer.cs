@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Zaliczenie.Data;
 
@@ -10,9 +11,11 @@ using Zaliczenie.Data;
 namespace Zaliczenie.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240120215955_onDeleteCascade")]
+    partial class onDeleteCascade
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "7.0.15");
@@ -217,6 +220,9 @@ namespace Zaliczenie.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("DocumentTypeEntityId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("DocumentTypeId")
                         .HasColumnType("INTEGER");
 
@@ -234,7 +240,7 @@ namespace Zaliczenie.Data.Migrations
 
                     b.HasIndex("ClientId");
 
-                    b.HasIndex("DocumentTypeId");
+                    b.HasIndex("DocumentTypeEntityId");
 
                     b.ToTable("ClientDocuments");
                 });
@@ -425,7 +431,7 @@ namespace Zaliczenie.Data.Migrations
 
                     b.HasOne("Zaliczenie.Data.Entities.ClientDocumentTypes", "DocumentTypeEntity")
                         .WithMany()
-                        .HasForeignKey("DocumentTypeId")
+                        .HasForeignKey("DocumentTypeEntityId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 

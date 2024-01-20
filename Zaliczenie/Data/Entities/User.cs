@@ -17,6 +17,7 @@ public class UserConfiguration : IEntityTypeConfiguration<User>
         builder.HasOne(e => e.Company)
             .WithMany(e => e.Members)
             .HasForeignKey(e => e.CompanyId)
-            .IsRequired(false);
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

@@ -21,7 +21,7 @@
                 <DataAnnotationsValidator/>
                 <ValidationSummary/>
 
-                <h2>Add Client Document</h2>
+                <h2>Edit Client Document</h2>
                 <hr/>
 
                 <div class="form-floating mb-3">
@@ -55,7 +55,7 @@
                 </div>
 
                 <div class="w-50 mx-auto">
-                    <button type="submit" class="w-100 btn btn-lg btn-primary">Add Document</button>
+                    <button type="submit" class="w-100 btn btn-lg btn-primary">Save</button>
                 </div>
             </EditForm>
         </section>
@@ -64,14 +64,14 @@
 
 @code {
     [Parameter]
-    public int id { get; set; }
+    public string id { get; set; }
     public InputModel Input { get; set; } = new InputModel();
 
     public List<SelectListItem> DocumentTypeOptions { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var editedData = await Context.ClientDocuments.FirstAsync(e => e.Id == id);
+        var editedData = await Context.ClientDocuments.FirstAsync(e => e.Id == int.Parse(id));
 
         Input.Status = editedData.Status;
         Input.AddedDate = editedData.AddedDate;
@@ -89,9 +89,6 @@
         public string DocumentNumber { get; set; }
 
         [Required]
-        public string AddedByUserId { get; set; }
-
-        [Required]
         public DateTime AddedDate { get; set; } = DateTime.Now;
 
         [Required]
@@ -103,7 +100,7 @@
 
     private async Task HandleValidSubmit()
     {
-        var editedData = await Context.ClientDocuments.FirstAsync(e => e.Id == id);
+        var editedData = await Context.ClientDocuments.FirstAsync(e => e.Id == int.Parse(id));
 
         editedData.DocumentNumber = Input.DocumentNumber;
         editedData.Status = Input.Status;

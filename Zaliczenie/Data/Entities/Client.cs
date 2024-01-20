@@ -27,10 +27,12 @@ public class ClientConfiguration : IEntityTypeConfiguration<Client>
         builder.HasOne(e => e.AssignedUser)
             .WithMany()
             .HasForeignKey(e => e.AssignedUserId)
-            .IsRequired(false);
+            .IsRequired(false)
+            .OnDelete(DeleteBehavior.Cascade);
 
         builder.HasOne(e => e.Company)
             .WithMany()
-            .HasForeignKey(e => e.CompanyId);
+            .HasForeignKey(e => e.CompanyId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

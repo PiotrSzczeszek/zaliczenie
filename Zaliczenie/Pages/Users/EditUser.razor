@@ -12,6 +12,7 @@
 @inject UserManager<User> UserManager
 @inject ApplicationDbContext Context
 @inject NavigationManager NavigationManager
+@inject SignInManager<User> SignInManager
 @inject UserService UserService
 @attribute [Authorize(Roles = $"{AppRoles.CompanyManager}, {AppRoles.Admin}")]
 
@@ -161,6 +162,7 @@
             else
                 await UserManager.RemoveFromRoleAsync(UpdatedUser, AppRoles.Accountant);
 
+            
             NavigationManager.NavigateTo("/users");
         }
         else

@@ -25,7 +25,7 @@ builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfi
 builder.Services.AddScoped<UserService>();
 builder.Services.AddRazorPages().AddRazorPagesOptions(options =>
 {
-    options.Conventions.AuthorizeFolder("/");
+    // options.Conventions.AuthorizeFolder("/");
 });
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddServerSideBlazor();

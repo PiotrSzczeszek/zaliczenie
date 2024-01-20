@@ -13,6 +13,7 @@
 @inject ApplicationDbContext Context
 @inject NavigationManager NavigationManager
 @inject UserService UserService
+@attribute [Authorize(Roles = AppRoles.CompanyManager)]
 
 <div class="row w-75 mx-auto">
     <div class="col-md-12">

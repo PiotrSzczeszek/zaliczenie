@@ -12,6 +12,7 @@
 @using Zaliczenie.Data.Constants
 @using Zaliczenie.Data.Entities
 @using Zaliczenie.Shared.Components
+@attribute [Authorize(Roles = AppRoles.CompanyManager)]
 @inject IJSRuntime JS
 @inject UserManager<User> UserManager
 @inject NavigationManager NavigationManager

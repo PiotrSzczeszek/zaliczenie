@@ -5,7 +5,8 @@ EXPOSE 443
 
 FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
 WORKDIR /src
-COPY ["Zaliczenie/Zaliczenie.csproj", "Zaliczenie/"]
+COPY ["Zaliczenie.csproj", "Zaliczenie/"]
+RUN ls -l
 RUN dotnet restore "Zaliczenie/Zaliczenie.csproj"
 COPY . .
 WORKDIR "/src/Zaliczenie"

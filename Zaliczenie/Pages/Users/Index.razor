@@ -9,13 +9,14 @@
 @using Microsoft.AspNetCore.Identity
 @using Microsoft.JSInterop
 @using Zaliczenie.Data
+@using Zaliczenie.Data.Constants
 @using Zaliczenie.Data.Entities
 @using Zaliczenie.Shared.Components
 @inject IJSRuntime JS
 @inject UserManager<User> UserManager
+@inject NavigationManager NavigationManager
 
-<h3>Index</h3>
-
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @inject ApplicationDbContext DbContext
 
 <DataTable Data="@Users" Columns="@ColumnsConfig" 
@@ -46,14 +47,18 @@
     private RenderFragment<object> ActionButtons()
     {
         var buttonBuilder = new ButtonsGenerator<object>();
-        buttonBuilder.AddButton((x) => DeleteItem(x), this, "btn btn-danger", "Delete");
+        buttonBuilder
+            .AddButton((x) => EditItem(x), this, "btn btn-warning", "oi oi-pencil")
+            .AddButton((x) => DeleteItem(x), this, "btn btn-danger", "oi oi-trash");
 
         return buttonBuilder.Build();
     }
 
-    private static void EditItem(object item)
+    private void EditItem(object item)
     {
-    // Edit logic here
+        var x = (dynamic)item;
+        
+        NavigationManager.NavigateTo("/users/edit/" + x.Id);
     }
 
     private async Task DeleteItem(object item)
@@ -71,12 +76,27 @@
         var user = await UserManager.FindByIdAsync(id);
         await UserManager.DeleteAsync(user!);
         
-        OnInitialized();
+        await OnInitializedAsync();
     }
     
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
-        Users = DbContext.Users.Select(e => (object)new
+        var usersQuery = DbContext.Users.AsQueryable();
+            
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        
+        var userRoles = user.FindAll(claim => claim.Type == System.Security.Claims.ClaimTypes.Role)
+            .Select(claim => claim.Value);
+
+        if (!userRoles.Contains(AppRoles.Admin))
+        {
+            var userEntity = await UserManager.GetUserAsync(user);
+            usersQuery = usersQuery.Where(e => e.CompanyId == userEntity.CompanyId);
+        }
+
+        Users = usersQuery.Select(e => (object)new
         {
             e.UserName,
             e.Company.CompanyName,

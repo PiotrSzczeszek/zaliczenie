@@ -7,7 +7,7 @@ public class ButtonsGenerator<T>
 {
     private List<Action<RenderTreeBuilder, T, int>> _actions = new();
 
-    public ButtonsGenerator<T> AddButton(Action<T> handler, object handlerReceiver, string buttonClass, string buttonText)
+    public ButtonsGenerator<T> AddButton(Action<T> handler, object handlerReceiver, string buttonClass, string buttonIcon)
     {
         // Store the action to add a button, rather than adding it immediately
         _actions.Add((builder, item, seq) =>
@@ -15,7 +15,9 @@ public class ButtonsGenerator<T>
             builder.OpenElement(seq++, "button");
             builder.AddAttribute(seq++, "onclick", EventCallback.Factory.Create(handlerReceiver, () => handler(item)));
             builder.AddAttribute(seq++, "class", buttonClass);
-            builder.AddContent(seq++, buttonText);
+            builder.OpenElement(seq++, "span");
+            builder.AddAttribute(seq++, "class", buttonIcon);
+            builder.CloseElement();
             builder.CloseElement();
         });
 

@@ -13,9 +13,10 @@
         <div>
             <AdminNavElements></AdminNavElements>
             <NavElement Href="" Icon="oi oi-home"  Title="Home"></NavElement>
-            <NavElement Href="users" Icon="oi oi-people-outline"  Title="Users"></NavElement>
-            <NavElement Href="counter" Icon="oi oi-plus"  Title="Counter"></NavElement>
-            <NavElement Href="fetchdata" Icon="oi oi-list-rich"  Title="Fetch data"></NavElement>
+            <NavMenuGroup Title="Users" Icon="oi oi-people">
+                <NavElement Href="users" Icon="oi oi-list"  Title="List"></NavElement>
+                <NavElement Href="users/add" Icon="oi oi-plus"  Title="Add"></NavElement>
+            </NavMenuGroup>
             <div class="nav-item px-3">
                 <NavLink class="nav-link" href="counter">
                     <span class="oi oi-plus" aria-hidden="true"></span> Counter
@@ -32,7 +33,7 @@
                 <Authorized>
                     
                     <div class="nav-item">
-                        <NavLink class="nav-link" href="Identity/Account/Manage" Match="NavLinkMatch.All">
+                        <NavLink class="nav-link" href="Identity/Account/Manage/Index" Match="NavLinkMatch.All">
                             <span class="oi oi-person" aria-hidden="true"></span> Manage account
                         </NavLink>
                     </div>

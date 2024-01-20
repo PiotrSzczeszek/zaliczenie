@@ -8,6 +8,7 @@ using Zaliczenie.Areas.Identity;
 using Zaliczenie.Data;
 using Zaliczenie.Data.Entities;
 using Zaliczenie.StartupConfiguration;
+using Zaliczenie.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +21,8 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddDefaultIdentity<User>(options => options.SignIn.RequireConfirmedAccount = false)
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+builder.Services.AddScoped<UserService>();
 builder.Services.AddRazorPages().AddRazorPagesOptions(options =>
 {
     options.Conventions.AuthorizeFolder("/");

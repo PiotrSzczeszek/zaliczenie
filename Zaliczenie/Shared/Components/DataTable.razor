@@ -1,5 +1,6 @@
 @using Zaliczenie.Data.DTO
 @using System.Diagnostics
+@using System.Timers
 @typeparam T
 
 @if (Data != null && Columns != null)
@@ -16,16 +17,29 @@
                             <span>@(currentSortDirection == SortDirection.Ascending ? "🔼" : "🔽")</span>
                         }
                     </th>
-                    
                 }
                 @if (ActionTemplate != null)
                 {
                     <th>Actions</th>
                 }
             </tr>
+            <tr>
+                @foreach (var column in Columns)
+                {
+                    <th>
+                        <div class=" mb-3">
+                            <input  class="form-control" @bind="@columnFilterValues[column.PropertyName]" @oninput="() => HandleFilterChange(column.PropertyName)" placeholder="Filter..." />
+                        </div>
+                    </th>
+                }
+                @if (ActionTemplate != null)
+                {
+                    <th></th>
+                }
+            </tr>
         </thead>
         <tbody>
-            @foreach (var item in sortedData)
+            @foreach (var item in FilteredData())
             {
                 <tr>
                     @foreach (var column in Columns)
@@ -35,10 +49,9 @@
                     
                     @if (ActionTemplate != null)
                     {
-                        <td>@ActionTemplate(item)</td>
+                        <td class="d-flex flex-row gap-2">@ActionTemplate(item)</td>
                     }
                 </tr>
-                
             }
         </tbody>
     </table>
@@ -54,15 +67,57 @@
     [Parameter]
     public RenderFragment<T>? ActionTemplate { get; set; }
 
+    private IDictionary<string, string> columnFilterValues = new Dictionary<string, string>();
+    private Timer filterDelayTimer = new Timer(500); // 500 ms delay
 
     private IEnumerable<T>? sortedData;
     private string? currentSortingColumn;
     private SortDirection currentSortDirection = SortDirection.None;
 
+    protected override void OnInitialized()
+    {
+        foreach (var column in Columns)
+        {
+            columnFilterValues.Add(column.PropertyName, string.Empty);
+        }
+
+        filterDelayTimer.Elapsed += OnFilterDelayElapsed;
+        filterDelayTimer.AutoReset = false;
+    }
+
     protected override void OnParametersSet()
     {
         sortedData = Data;
     }
+
+    private IEnumerable<T> FilteredData()
+    {
+        var filteredData = sortedData;
+        foreach (var filter in columnFilterValues)
+        {
+            if (!string.IsNullOrWhiteSpace(filter.Value))
+            {
+                filteredData = filteredData.Where(item => GetPropertyValue(item, filter.Key)?.ToString().Contains(filter.Value, StringComparison.OrdinalIgnoreCase) == true);
+            }
+        }
+
+        return filteredData;
+    }
+
+    private void HandleFilterChange(string columnName)
+    {
+        filterDelayTimer.Stop();
+        filterDelayTimer.Start();
+    }
+
+    private void OnFilterDelayElapsed(object sender, ElapsedEventArgs e)
+    {
+        InvokeAsync(() =>
+        {
+            StateHasChanged();
+        });
+    }
+
 
     private object GetPropertyValue(object item, string propertyName)
     {

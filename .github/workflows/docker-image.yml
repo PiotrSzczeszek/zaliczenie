@@ -29,7 +29,7 @@ jobs:
       - name: Build and Push API Image
         uses: docker/build-push-action@v2
         with:
-          context: ./
+          context: ./Zaliczenie
           file: ./Zaliczenie/Dockerfile
           push: true
           tags: ghcr.io/${{ env.REPO_NAME }}/api:latest

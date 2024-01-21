@@ -71,6 +71,7 @@
 
     protected override async Task OnInitializedAsync()
     {
+        var currentUser = await UserService.GetCurrentUser();
         var editedData = await Context.ClientDocuments.FirstAsync(e => e.Id == int.Parse(id));
 
         Input.Status = editedData.Status;
@@ -79,6 +80,7 @@
         Input.DocumentTypeId = editedData.DocumentTypeId;
 
         DocumentTypeOptions = Context.ClientDocumentTypes
+            .Where(e => e.CompanyId == currentUser!.CompanyId)
             .Select(dt => new SelectListItem(dt.Name, dt.Id.ToString()))
             .ToList();
     }

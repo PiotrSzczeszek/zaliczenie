@@ -88,6 +88,7 @@
 
         DocumentTypeOptions = Context.ClientDocumentTypes
             .AsNoTracking()
+            .Where(e => e.CompanyId == currentUser.CompanyId)
             .Select(dt => new SelectListItem(dt.Name, dt.Id.ToString()))
             .ToList();
         ClientOptions = Context.Clients
